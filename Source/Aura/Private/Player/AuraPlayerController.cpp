@@ -4,10 +4,18 @@
 
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
+#include "Interaction/EnemyInterface.h"
 
 AAuraPlayerController::AAuraPlayerController()
 {
 	bReplicates = true;
+}
+
+void AAuraPlayerController::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+
+	CursorTrace();
 }
 
 void AAuraPlayerController::BeginPlay()
@@ -50,5 +58,38 @@ void AAuraPlayerController::Move(const FInputActionValue& InputActionValue)
 	{
 		ControlledPawn->AddMovementInput(ForwardDirection, InputAxisVector.Y);
 		ControlledPawn->AddMovementInput(RightDirection, InputAxisVector.X);
+	}
+}
+
+void AAuraPlayerController::CursorTrace()
+{
+	FHitResult CursorHit;
+	GetHitResultUnderCursor(ECC_Visibility, false, CursorHit);
+	if (!CursorHit.bBlockingHit)
+	{
+		return;
+	}
+
+	LastActor = ThisActor;
+	ThisActor = Cast<IEnemyInterface>(CursorHit.GetActor());
+
+	if (!LastActor && !ThisActor) // Not hovering at anything
+	{
+	}
+	else if (!LastActor && ThisActor) // Start hovering at an enemy
+	{
+		ThisActor->HighlightActor();
+	}
+	else if (LastActor && !ThisActor) // Stop hovering at an enemy
+	{
+		LastActor->UnHighlightActor();
+	}
+	else if (LastActor && ThisActor && LastActor != ThisActor) // Switch hovering to another enemy
+	{
+		LastActor->UnHighlightActor();
+		ThisActor->HighlightActor();
+	}
+	else if (!LastActor && !ThisActor && LastActor == ThisActor) // Hovering at the same enemy
+	{
 	}
 }

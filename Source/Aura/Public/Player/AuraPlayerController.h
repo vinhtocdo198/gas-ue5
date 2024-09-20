@@ -17,6 +17,8 @@ class AURA_API AAuraPlayerController : public APlayerController
 public:
 	AAuraPlayerController();
 
+	virtual void Tick(float DeltaTime) override;
+
 protected:
 	virtual void BeginPlay() override;
 
@@ -30,4 +32,9 @@ private:
 	TObjectPtr<class UInputAction> MoveAction;
 
 	void Move(const struct FInputActionValue& InputActionValue);
+
+	void CursorTrace();
+
+	class IEnemyInterface* LastActor;
+	IEnemyInterface* ThisActor;
 };
