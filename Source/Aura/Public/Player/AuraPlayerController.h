@@ -6,6 +6,7 @@
 #include "GameFramework/PlayerController.h"
 #include "AuraPlayerController.generated.h"
 
+class IEnemyInterface;
 /**
  * 
  */
@@ -35,6 +36,6 @@ private:
 
 	void CursorTrace();
 
-	class IEnemyInterface* LastActor;
-	IEnemyInterface* ThisActor;
+	TScriptInterface<IEnemyInterface> LastActor;
+	TScriptInterface<IEnemyInterface> ThisActor;
 };
