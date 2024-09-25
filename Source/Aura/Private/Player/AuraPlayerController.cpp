@@ -73,7 +73,7 @@ void AAuraPlayerController::CursorTrace()
 	}
 
 	LastActor = ThisActor;
-	ThisActor = Cast<IEnemyInterface>(CursorHit.GetActor());
+	ThisActor = CursorHit.GetActor();
 
 	if (!LastActor && !ThisActor) // Not hovering at anything
 	{
