@@ -99,7 +99,6 @@ void AAuraPlayerController::Move(const FInputActionValue& InputActionValue)
 
 void AAuraPlayerController::CursorTrace()
 {
-	FHitResult CursorHit;
 	GetHitResultUnderCursor(ECC_Visibility, false, CursorHit);
 	if (!CursorHit.bBlockingHit)
 	{
@@ -109,24 +108,16 @@ void AAuraPlayerController::CursorTrace()
 	LastActor = ThisActor;
 	ThisActor = CursorHit.GetActor();
 
-	if (!LastActor && !ThisActor) // Not hovering at anything
+	if (ThisActor != LastActor)
 	{
-	}
-	else if (!LastActor && ThisActor) // Start hovering at an enemy
-	{
-		ThisActor->HighlightActor();
-	}
-	else if (LastActor && !ThisActor) // Stop hovering at an enemy
-	{
-		LastActor->UnHighlightActor();
-	}
-	else if (LastActor && ThisActor && LastActor != ThisActor) // Switch hovering to another enemy
-	{
-		LastActor->UnHighlightActor();
-		ThisActor->HighlightActor();
-	}
-	else if (!LastActor && !ThisActor && LastActor == ThisActor) // Hovering at the same enemy
-	{
+		if (LastActor)
+		{
+			LastActor->UnHighlightActor();
+		}
+		if (ThisActor)
+		{
+			ThisActor->HighlightActor();
+		}
 	}
 }
 
@@ -164,13 +155,12 @@ void AAuraPlayerController::AbilityInputTagReleased(FGameplayTag InputTag)
 		{
 			UNavigationPath* NavPath = UNavigationSystemV1::FindPathToLocationSynchronously(
 				this, ControlledPawn->GetActorLocation(), CachedDestination);
-			if (NavPath)
+			if (!NavPath->PathPoints.IsEmpty())
 			{
 				Spline->ClearSplinePoints();
 				for (const FVector& PointLocation : NavPath->PathPoints)
 				{
 					Spline->AddSplinePoint(PointLocation, ESplineCoordinateSpace::World);
-					DrawDebugSphere(GetWorld(), PointLocation, 8.f, 8, FColor::Green, false, 0.5f);
 				}
 				CachedDestination = NavPath->PathPoints.Last();
 				bAutoRunning = true;
@@ -203,10 +193,9 @@ void AAuraPlayerController::AbilityInputTagHeld(FGameplayTag InputTag)
 	{
 		FollowTime += GetWorld()->GetDeltaSeconds();
 
-		FHitResult Hit;
-		if (GetHitResultUnderCursor(ECC_Visibility, false, Hit))
+		if (CursorHit.bBlockingHit)
 		{
-			CachedDestination = Hit.ImpactPoint;
+			CachedDestination = CursorHit.ImpactPoint;
 		}
 
 		if (APawn* ControlledPawn = GetPawn())
