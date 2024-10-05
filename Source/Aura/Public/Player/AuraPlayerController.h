@@ -12,6 +12,9 @@ class UAuraAbilitySystemComponent;
 struct FGameplayTag;
 class UAuraInputConfig;
 class IEnemyInterface;
+class UInputMappingContext;
+class UInputAction;
+
 /**
  * 
  */
@@ -32,10 +35,17 @@ protected:
 
 private:
 	UPROPERTY(EditAnywhere, Category="Input")
-	TObjectPtr<class UInputMappingContext> AuraContext;
+	TObjectPtr<UInputMappingContext> AuraContext;
 
 	UPROPERTY(EditAnywhere, Category="Input")
-	TObjectPtr<class UInputAction> MoveAction;
+	TObjectPtr<UInputAction> MoveAction;
+
+	UPROPERTY(EditAnywhere, Category="Input")
+	TObjectPtr<UInputAction> ShiftAction;
+
+	void ShiftPressed() { bShiftKeyDown = true; }
+	void ShiftReleased() { bShiftKeyDown = false; }
+	bool bShiftKeyDown = false;
 
 	void Move(const struct FInputActionValue& InputActionValue);
 
@@ -43,7 +53,7 @@ private:
 	TScriptInterface<IEnemyInterface> LastActor;
 	TScriptInterface<IEnemyInterface> ThisActor;
 	FHitResult CursorHit;
-	
+
 	void AbilityInputTagPressed(FGameplayTag InputTag);
 	void AbilityInputTagReleased(FGameplayTag InputTag);
 	void AbilityInputTagHeld(FGameplayTag InputTag);
