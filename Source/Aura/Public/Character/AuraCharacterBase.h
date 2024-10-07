@@ -26,6 +26,8 @@ public:
 
 	UAttributeSet* GetAttributeSet() const { return AttributeSet; }
 
+	virtual UAnimMontage* GetHitReactMontage_Implementation() override;
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -37,7 +39,7 @@ protected:
 	FName WeaponTipSocketName;
 
 	virtual FVector GetCombatSocketLocation() override;
-	
+
 	UPROPERTY()
 	TObjectPtr<UAbilitySystemComponent> AbilitySystemComponent;
 
@@ -57,11 +59,14 @@ protected:
 
 	void ApplyEffectToSelf(TSubclassOf<UGameplayEffect> GameplayEffectClass, float Level) const;
 
-	void InitializeDefaultAttributes() const;
+	virtual void InitializeDefaultAttributes() const;
 
 	void AddCharacterAbilities();
 
 private:
-	UPROPERTY(EditAnywhere, Category = "Abilities", meta = (AllowPrivate))
+	UPROPERTY(EditAnywhere, Category = "Abilities")
 	TArray<TSubclassOf<UGameplayAbility>> StartUpAbilities;
+
+	UPROPERTY(EditAnywhere, Category = "Combat")
+	TObjectPtr<UAnimMontage> HitReactMontage;
 };
