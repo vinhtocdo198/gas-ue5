@@ -29,13 +29,15 @@ void AAuraPlayerController::Tick(float DeltaTime)
 	AutoRun();
 }
 
-void AAuraPlayerController::ShowDamageDealt_Implementation(float Damage, ACharacter* TargetCharacter, bool bBlockedHit, bool bCriticalHit)
+void AAuraPlayerController::ShowDamageDealt_Implementation(float Damage, ACharacter* TargetCharacter, bool bBlockedHit,
+                                                           bool bCriticalHit)
 {
 	if (IsValid(TargetCharacter) && DamageTextComponentClass && IsLocalController())
 	{
 		UDamageTextComponent* DamageText = NewObject<UDamageTextComponent>(TargetCharacter, DamageTextComponentClass);
 		DamageText->RegisterComponent();
-		DamageText->AttachToComponent(TargetCharacter->GetRootComponent(), FAttachmentTransformRules::KeepRelativeTransform);
+		DamageText->AttachToComponent(TargetCharacter->GetRootComponent(),
+		                              FAttachmentTransformRules::KeepRelativeTransform);
 		DamageText->DetachFromComponent(FDetachmentTransformRules::KeepWorldTransform);
 		DamageText->SetDamageText(Damage, bBlockedHit, bCriticalHit);
 	}
@@ -169,7 +171,7 @@ void AAuraPlayerController::AbilityInputTagReleased(FGameplayTag InputTag)
 		{
 			UNavigationPath* NavPath = UNavigationSystemV1::FindPathToLocationSynchronously(
 				this, ControlledPawn->GetActorLocation(), CachedDestination);
-			if (!NavPath->PathPoints.IsEmpty())
+			if (IsValid(NavPath) && !NavPath->PathPoints.IsEmpty())
 			{
 				Spline->ClearSplinePoints();
 				for (const FVector& PointLocation : NavPath->PathPoints)
